@@ -1,9 +1,11 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import * as yup from 'yup';
 import {productApi} from "../../apis/ProductApi";
 import {useForm} from "react-hook-form";
 import {yupResolver} from "@hookform/resolvers/yup";
-import { useNavigate } from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
+import {useDispatch, useSelector} from "react-redux";
+import {getDetail} from "../../redux/actions/Product";
 
 const FIELD = {
   productName: "tên sản phẩm",
@@ -21,7 +23,11 @@ const exceedCharacter = (field, max) => {
 };
 
 function Create() {
+  const {id} = useParams();
   const navigate = useNavigate();
+  const product = useSelector(state => state.product.productDetail);
+  const dispatch = useDispatch();
+  const [isEdit, setIsEdit] = useState(false);
 
   const scheme = yup.object({
     productName: yup.string().required(requiredMessage(FIELD.productName)).max(50, exceedCharacter(FIELD.productName, 50)),
@@ -33,6 +39,14 @@ function Create() {
   const { setFocus, register, handleSubmit, formState: { errors } } = useForm({ resolver: yupResolver(scheme) });
 
   useEffect(() => {
+    if (id !== "new") {
+      const action = getDetail(id);
+      dispatch(action);
+      setIsEdit(true);
+    }
+  }, [id]);
+
+  useEffect(() => {
     setFocus("productName");
   }, [setFocus]);
 
@@ -41,10 +55,17 @@ function Create() {
   }
 
   const onSubmit = (data) => {
-    productApi.createProduct(data)
-      .then(res => res.json())
-      .then(() => gotoHome())
-      .catch(error => console.log(error));
+    if (id === "new") {
+      productApi.createProduct(data)
+        .then(res => res.json())
+        .then(() => gotoHome())
+        .catch(error => console.log(error));
+    } else {
+      productApi.updateProduct(id, data)
+        .then(res => res.json())
+        .then(() => gotoHome())
+        .catch(error => console.log(error));
+    }
   }
 
   return (
@@ -55,26 +76,29 @@ function Create() {
             <div className="form-group">
               <label>Tên sản phẩm</label>
               <label style={{color: "red"}}>*</label>
-              <input type="text" className="form-control" name="productName" placeholder="Tên sản phẩm" {...register("productName")} />
+              <input type="text" className="form-control" name="productName" placeholder="Tên sản phẩm" defaultValue={isEdit ? product?.productName : ""} {...register("productName")} />
               <small className="form-text text-danger font-italic">{errors.productName?.message}</small>
             </div>
             <div className="form-group">
               <label>Hình ảnh</label>
               <label style={{color: "red"}}>*</label>
-              <input type="text" className="form-control" name="image" placeholder="Link ảnh" {...register("image")} />
+              <input type="text" className="form-control" name="image" placeholder="Link ảnh" defaultValue={isEdit ? product?.image : ""} {...register("image")} />
               <small className="form-text text-danger font-italic">{errors.image?.message}</small>
             </div>
             <div className="form-group">
               <label>Giá</label>
-              <input type="number" className="form-control" name="price" defaultValue={1000} {...register("price")} />
+              <input type="number" className="form-control" name="price" defaultValue={isEdit ? product?.price : 1000} {...register("price")} />
               <small className="form-text text-danger font-italic">{errors.price?.message}</small>
             </div>
             <div className="form-group">
               <label>Nội dung</label>
-              <textarea className="form-control" name="content" rows="3" {...register("content")}></textarea>
+              <textarea className="form-control" name="content" rows="3" defaultValue={isEdit ? product?.content : ""} {...register("content")}></textarea>
               <small className="form-text text-danger font-italic">{errors.content?.message}</small>
             </div>
-            <button type="submit" className="btn btn-primary">Tạo mới</button>
+            {
+              !isEdit ? <button type="submit" className="btn btn-primary">Tạo mới</button> :
+                <button type="submit" className="btn btn-primary">Cập nhật</button>
+            }
           </form>
         </div>
       </div>

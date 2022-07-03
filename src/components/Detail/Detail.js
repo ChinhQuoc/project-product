@@ -32,7 +32,8 @@ function Detail() {
           <p>{product.content}</p>
           <div className="container mt-5">
             <div className="row d-flex justify-content-end">
-              <button type="button" className="btn btn-primary" onClick={() => navigate("/")}>Trang chủ</button>
+              <button type="button" className="btn btn-primary mr-5" onClick={() => navigate("/")}>Trang chủ</button>
+              <button type="button" className="btn btn-primary" onClick={() => navigate(`/create/${id}`)}>Cập nhật</button>
             </div>
           </div>
         </div>

@@ -10,19 +10,23 @@ function Home() {
   const navigate = useNavigate();
   const [isDelete, setIsDelete] = useState(false);
   const [pageSize, setPageSize] = useState(6);
+  const [loading, setLoading] = useState(false);
+  const [keyWord, setKeyWord] = useState('');
   const products = useSelector(state => state.product.list);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const action = getPagination(pageSize);
+    setLoading(true);
+    const action = getPagination(pageSize, keyWord);
     dispatch(action);
+    setLoading(false);
     return () => {
       setIsDelete(false);
     }
-  }, [pageSize, isDelete]);
+  }, [pageSize, keyWord, isDelete]);
 
   const gotoCreate = () => {
-    navigate("/create")
+    navigate("/create/new")
   }
 
   const handleDelete = id => {
@@ -41,7 +45,12 @@ function Home() {
   return (
     <div className="container">
       <div className="row button-create">
-        <button className="btn btn-success" onClick={() => gotoCreate()}>Tạo mới</button>
+        <div className="col-2">
+          <button className="btn btn-success" onClick={() => gotoCreate()}>Tạo mới</button>
+        </div>
+        <div className="col-10">
+          <input type="text" className="form-control" name="keyWord" onInput={(event) => setKeyWord(event.target.value)} />
+        </div>
       </div>
       <div className="row align-items-start">
         { listProject() }

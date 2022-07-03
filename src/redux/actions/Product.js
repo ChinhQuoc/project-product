@@ -48,25 +48,5 @@ export const GetDetail = (data) => {
   };
 };
 
-export const deleteProduct = (id) => {
-  return dispatch => {
-    fetch(`${URL}/delete/${id}`, {
-      method: 'delete'
-    })
-      .then(product => product.json())
-      .then((data) => {
-        dispatch(DeleteProduct(data))
-      })
-      .catch((error) => console.log(error))
-  };
-};
-
-export const DeleteProduct = (data) => {
-  return {
-    type: "DELETE",
-    payload: data
-  };
-};
-
 
 

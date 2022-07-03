@@ -17,6 +17,23 @@ class ProductApi {
     });
   };
 
+  updateProduct = async (id, product) => {
+    const requestBody = {
+      ProductId: id,
+      ProductName: product.productName,
+      Image: product.image,
+      Content: product.content,
+      Price: product.price
+    };
+    return await fetch(`${URL}/update`, {
+      method: 'put',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(requestBody)
+    });
+  }
+
   removeProduct = async (id) => {
     return await fetch(`${URL}/delete/${id}`, {
       method: 'delete',
