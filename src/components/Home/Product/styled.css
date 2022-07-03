@@ -1,0 +1,11 @@
+.card-product{
+  width: 18rem;
+  height: 328px;
+  margin-bottom: 10px;
+}
+
+h5 {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
